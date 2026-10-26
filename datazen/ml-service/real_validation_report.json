@@ -1,0 +1,93 @@
+{
+  "validated_at": "2026-10-25T06:19:57.220024+00:00",
+  "n_real_listings": 5,
+  "model_version": "v2-2026-10-25T06:17:26.119884+00:00",
+  "overall_metrics": {
+    "mae": 2069221.4,
+    "mape": 10.89,
+    "bias_mean_inr": 1933072.6,
+    "bias_pct": 13.03,
+    "bias_direction": "overestimation"
+  },
+  "per_locality_mape": {
+    "Adyar": 32.58,
+    "Anna Nagar": 0.15,
+    "OMR": 1.48,
+    "Tambaram": 16.29,
+    "Velachery": 3.93
+  },
+  "per_locality_details": {
+    "Adyar": {
+      "count": 1,
+      "mae": 8470812.0,
+      "mape": 32.58
+    },
+    "Anna Nagar": {
+      "count": 1,
+      "mae": 15004.0,
+      "mape": 0.15
+    },
+    "OMR": {
+      "count": 1,
+      "mae": 325368.0,
+      "mape": 1.48
+    },
+    "Tambaram": {
+      "count": 1,
+      "mae": 1172973.0,
+      "mape": 16.29
+    },
+    "Velachery": {
+      "count": 1,
+      "mae": 361950.0,
+      "mape": 3.93
+    }
+  },
+  "worst_10_errors": [
+    {
+      "rank": 1,
+      "locality": "Adyar",
+      "property_type": "Independent House/Villa",
+      "actual_price": 26000000,
+      "predicted_price": 34470812,
+      "diff_inr": 8470812,
+      "pct_error": 32.58
+    },
+    {
+      "rank": 2,
+      "locality": "Tambaram",
+      "property_type": "Residential Plot",
+      "actual_price": 7200000,
+      "predicted_price": 8372973,
+      "diff_inr": 1172973,
+      "pct_error": 16.29
+    },
+    {
+      "rank": 3,
+      "locality": "Velachery",
+      "property_type": "Apartment/Flat",
+      "actual_price": 9200000,
+      "predicted_price": 9561950,
+      "diff_inr": 361950,
+      "pct_error": 3.93
+    },
+    {
+      "rank": 4,
+      "locality": "OMR",
+      "property_type": "Commercial",
+      "actual_price": 22000000,
+      "predicted_price": 21674632,
+      "diff_inr": -325368,
+      "pct_error": 1.48
+    },
+    {
+      "rank": 5,
+      "locality": "Anna Nagar",
+      "property_type": "Apartment/Flat",
+      "actual_price": 9800000,
+      "predicted_price": 9784996,
+      "diff_inr": -15004,
+      "pct_error": 0.15
+    }
+  ]
+}

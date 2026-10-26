@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String         @id @default(cuid())
+  name      String
+  email     String         @unique
+  password  String
+  phone     String?
+  createdAt DateTime       @default(now())
+  listings  Listing[]
+  saved     SavedListing[]
+}
+
+model Listing {
+  id           String         @id @default(cuid())
+  title        String
+  locality     String
+  address      String?
+  type         String
+  bhk          Int
+  sqft         Int
+  price        Int
+  age          Int            @default(0)
+  floor        Int            @default(0)
+  parking      Boolean        @default(false)
+  furnished    Int            @default(0)
+  description  String?
+  imageUrl     String?
+  lat          Float?
+  lng          Float?
+  userId       String
+  user         User           @relation(fields: [userId], references: [id])
+  savedBy      SavedListing[]
+  soilReadings SoilReading[]
+  createdAt    DateTime       @default(now())
+}
+
+model SoilReading {
+  id          String   @id @default(cuid())
+  propertyId  String
+  listing     Listing  @relation(fields: [propertyId], references: [id])
+  moisture    Float?   // Soil moisture in %
+  ph          Float?   // pH value (0-14)
+  nitrogen    Float?   // Nitrogen in mg/kg
+  phosphorus  Float?   // Phosphorus in mg/kg
+  potassium   Float?   // Potassium in mg/kg
+  temperature Float?   // Soil temperature in °C
+  createdAt   DateTime @default(now())
+}
+
+model SavedListing {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  user      User     @relation(fields: [userId], references: [id])
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
+}

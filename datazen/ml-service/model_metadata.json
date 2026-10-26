@@ -1,0 +1,421 @@
+{
+  "model_version": "v2.1-2026-10-25T06:45:41.220067+00:00",
+  "trained_at": "2026-10-25T06:45:41.220067+00:00",
+  "n_train_rows": 7000,
+  "n_calibration_rows": 1500,
+  "n_test_rows": 1500,
+  "n_real_rows": 0,
+  "data_source": "synthetic",
+  "localities": [
+    "Adyar",
+    "T Nagar",
+    "Anna Nagar",
+    "Velachery",
+    "OMR",
+    "Porur",
+    "Chrompet",
+    "Tambaram",
+    "Guindy",
+    "Perungudi",
+    "Sholinganallur",
+    "Medavakkam",
+    "Pallavaram",
+    "Mylapore",
+    "Kilpauk",
+    "Nungambakkam",
+    "Perambur",
+    "Ambattur",
+    "Thoraipakkam",
+    "Madipakkam"
+  ],
+  "locality_status": {
+    "Adyar": "trained",
+    "T Nagar": "trained",
+    "Anna Nagar": "trained",
+    "Velachery": "trained",
+    "OMR": "trained",
+    "Porur": "trained",
+    "Chrompet": "trained",
+    "Tambaram": "trained",
+    "Guindy": "assumed",
+    "Perungudi": "assumed",
+    "Sholinganallur": "assumed",
+    "Medavakkam": "assumed",
+    "Pallavaram": "assumed",
+    "Mylapore": "assumed",
+    "Kilpauk": "assumed",
+    "Nungambakkam": "assumed",
+    "Perambur": "assumed",
+    "Ambattur": "assumed",
+    "Thoraipakkam": "assumed",
+    "Madipakkam": "assumed"
+  },
+  "features": [
+    "property_type_enc",
+    "locality_enc",
+    "lat",
+    "lng",
+    "area_sqft",
+    "built_up_sqft",
+    "bhk",
+    "bathrooms",
+    "age_years",
+    "floor",
+    "total_floors",
+    "parking",
+    "furnished",
+    "lift",
+    "power_backup",
+    "gated",
+    "facing_enc",
+    "road_width_ft",
+    "corner",
+    "flood_prone",
+    "approved_enc",
+    "frontage_ft",
+    "commercial_subtype_enc",
+    "school_dist_km",
+    "hospital_dist_km",
+    "bus_dist_km",
+    "metro_dist_km",
+    "supermarket_dist_km",
+    "park_dist_km",
+    "amenity_score"
+  ],
+  "feature_ranges": {
+    "lat": {
+      "min": 12.8815,
+      "max": 13.1341,
+      "median": 12.9927
+    },
+    "lng": {
+      "min": 80.0764,
+      "max": 80.284,
+      "median": 80.221
+    },
+    "area_sqft": {
+      "min": 307.0,
+      "max": 7990.0,
+      "median": 2178.0
+    },
+    "built_up_sqft": {
+      "min": 0.0,
+      "max": 7017.0,
+      "median": 1600.5
+    },
+    "bhk": {
+      "min": 0.0,
+      "max": 6.0,
+      "median": 2.0
+    },
+    "bathrooms": {
+      "min": 0.0,
+      "max": 7.0,
+      "median": 1.0
+    },
+    "age_years": {
+      "min": 0.0,
+      "max": 29.0,
+      "median": 8.0
+    },
+    "floor": {
+      "min": 0.0,
+      "max": 18.0,
+      "median": 0.0
+    },
+    "total_floors": {
+      "min": 0.0,
+      "max": 19.0,
+      "median": 2.0
+    },
+    "parking": {
+      "min": 0.0,
+      "max": 3.0,
+      "median": 1.0
+    },
+    "furnished": {
+      "min": 0.0,
+      "max": 2.0,
+      "median": 0.0
+    },
+    "lift": {
+      "min": 0.0,
+      "max": 1.0,
+      "median": 0.0
+    },
+    "power_backup": {
+      "min": 0.0,
+      "max": 1.0,
+      "median": 0.0
+    },
+    "gated": {
+      "min": 0.0,
+      "max": 1.0,
+      "median": 0.0
+    },
+    "road_width_ft": {
+      "min": 20.0,
+      "max": 80.0,
+      "median": 30.0
+    },
+    "corner": {
+      "min": 0.0,
+      "max": 1.0,
+      "median": 0.0
+    },
+    "flood_prone": {
+      "min": 0.0,
+      "max": 1.0,
+      "median": 0.0
+    },
+    "frontage_ft": {
+      "min": 0.0,
+      "max": 79.0,
+      "median": 0.0
+    },
+    "school_dist_km": {
+      "min": 0.2,
+      "max": 5.0,
+      "median": 2.58
+    },
+    "hospital_dist_km": {
+      "min": 0.3,
+      "max": 6.0,
+      "median": 3.2
+    },
+    "bus_dist_km": {
+      "min": 0.1,
+      "max": 3.5,
+      "median": 1.79
+    },
+    "metro_dist_km": {
+      "min": 0.3,
+      "max": 10.0,
+      "median": 5.2
+    },
+    "supermarket_dist_km": {
+      "min": 0.2,
+      "max": 4.0,
+      "median": 2.11
+    },
+    "park_dist_km": {
+      "min": 0.2,
+      "max": 5.0,
+      "median": 2.64
+    },
+    "amenity_score": {
+      "min": 10.0,
+      "max": 84.0,
+      "median": 44.0
+    }
+  },
+  "interval_coverage": 0.8,
+  "interval_relative_bounds": [
+    -0.0803,
+    0.0788
+  ],
+  "validation_mape": 5.17,
+  "test_metrics": {
+    "r2": 0.9848,
+    "mae": 928333.8,
+    "mape": 5.17
+  },
+  "per_locality_mape": {
+    "Adyar": 4.68,
+    "T Nagar": 5.03,
+    "Anna Nagar": 5.58,
+    "Velachery": 6.04,
+    "OMR": 4.07,
+    "Porur": 5.17,
+    "Chrompet": 4.43,
+    "Tambaram": 5.19,
+    "Guindy": 5.52,
+    "Perungudi": 4.18,
+    "Sholinganallur": 4.08,
+    "Medavakkam": 5.33,
+    "Pallavaram": 4.52,
+    "Mylapore": 6.08,
+    "Kilpauk": 6.08,
+    "Nungambakkam": 5.65,
+    "Perambur": 6.22,
+    "Ambattur": 4.53,
+    "Thoraipakkam": 4.92,
+    "Madipakkam": 5.97
+  },
+  "per_locality_metrics": {
+    "Adyar": {
+      "status": "trained",
+      "r2": 0.9881,
+      "mae": 1017928.89,
+      "mape": 4.68,
+      "n_test_samples": 76
+    },
+    "T Nagar": {
+      "status": "trained",
+      "r2": 0.9822,
+      "mae": 1044938.53,
+      "mape": 5.03,
+      "n_test_samples": 72
+    },
+    "Anna Nagar": {
+      "status": "trained",
+      "r2": 0.9839,
+      "mae": 1072387.36,
+      "mape": 5.58,
+      "n_test_samples": 69
+    },
+    "Velachery": {
+      "status": "trained",
+      "r2": 0.9856,
+      "mae": 942988.42,
+      "mape": 6.04,
+      "n_test_samples": 71
+    },
+    "OMR": {
+      "status": "trained",
+      "r2": 0.9852,
+      "mae": 768163.39,
+      "mape": 4.07,
+      "n_test_samples": 83
+    },
+    "Porur": {
+      "status": "trained",
+      "r2": 0.9902,
+      "mae": 627406.34,
+      "mape": 5.17,
+      "n_test_samples": 96
+    },
+    "Chrompet": {
+      "status": "trained",
+      "r2": 0.9881,
+      "mae": 547210.88,
+      "mape": 4.43,
+      "n_test_samples": 68
+    },
+    "Tambaram": {
+      "status": "trained",
+      "r2": 0.9896,
+      "mae": 594452.16,
+      "mape": 5.19,
+      "n_test_samples": 68
+    },
+    "Guindy": {
+      "status": "assumed",
+      "r2": 0.9811,
+      "mae": 1085194.57,
+      "mape": 5.52,
+      "n_test_samples": 66
+    },
+    "Perungudi": {
+      "status": "assumed",
+      "r2": 0.9903,
+      "mae": 682513.58,
+      "mape": 4.18,
+      "n_test_samples": 72
+    },
+    "Sholinganallur": {
+      "status": "assumed",
+      "r2": 0.9915,
+      "mae": 605184.08,
+      "mape": 4.08,
+      "n_test_samples": 72
+    },
+    "Medavakkam": {
+      "status": "assumed",
+      "r2": 0.9811,
+      "mae": 773024.09,
+      "mape": 5.33,
+      "n_test_samples": 78
+    },
+    "Pallavaram": {
+      "status": "assumed",
+      "r2": 0.9904,
+      "mae": 593299.06,
+      "mape": 4.52,
+      "n_test_samples": 76
+    },
+    "Mylapore": {
+      "status": "assumed",
+      "r2": 0.9724,
+      "mae": 1574471.38,
+      "mape": 6.08,
+      "n_test_samples": 84
+    },
+    "Kilpauk": {
+      "status": "assumed",
+      "r2": 0.9835,
+      "mae": 1261444.59,
+      "mape": 6.08,
+      "n_test_samples": 77
+    },
+    "Nungambakkam": {
+      "status": "assumed",
+      "r2": 0.9742,
+      "mae": 1850423.98,
+      "mape": 5.65,
+      "n_test_samples": 85
+    },
+    "Perambur": {
+      "status": "assumed",
+      "r2": 0.9684,
+      "mae": 957345.38,
+      "mape": 6.22,
+      "n_test_samples": 67
+    },
+    "Ambattur": {
+      "status": "assumed",
+      "r2": 0.9891,
+      "mae": 535485.31,
+      "mape": 4.53,
+      "n_test_samples": 67
+    },
+    "Thoraipakkam": {
+      "status": "assumed",
+      "r2": 0.9912,
+      "mae": 750801.87,
+      "mape": 4.92,
+      "n_test_samples": 65
+    },
+    "Madipakkam": {
+      "status": "assumed",
+      "r2": 0.9748,
+      "mae": 1046768.69,
+      "mape": 5.97,
+      "n_test_samples": 88
+    }
+  },
+  "per_property_type_metrics": {
+    "Residential Plot": {
+      "r2": 0.9886,
+      "mae": 783331.1,
+      "mape": 4.44,
+      "n_test_samples": 361
+    },
+    "Independent House/Villa": {
+      "r2": 0.9744,
+      "mae": 1385494.13,
+      "mape": 5.5,
+      "n_test_samples": 380
+    },
+    "Apartment/Flat": {
+      "r2": 0.9876,
+      "mae": 462207.04,
+      "mape": 4.43,
+      "n_test_samples": 526
+    },
+    "Commercial": {
+      "r2": 0.977,
+      "mae": 1645879.57,
+      "mape": 6.33,
+      "n_test_samples": 157
+    },
+    "Other": {
+      "r2": 0.9459,
+      "mae": 1075084.32,
+      "mape": 9.8,
+      "n_test_samples": 76
+    }
+  },
+  "warning": "Demo estimate trained on synthetic data. Not a valuation.",
+  "synthetic_disclaimer": "These metrics measure how well the model fits our synthetic generator, NOT real-market accuracy."
+}

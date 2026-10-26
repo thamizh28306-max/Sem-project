@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>DataZen — Chennai Property Intelligence</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="" />
+
+  <!-- React via CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* ─── Navigation ─── */
+    .navbar {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow);
+    }
+    .navbar-brand {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .navbar-brand span { color: var(--text); }
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      list-style: none;
+    }
+    .nav-tab {
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border: none;
+      background: none;
+      transition: all 0.15s;
+    }
+    .nav-tab:hover { background: #f1f5f9; color: var(--text); }
+    .nav-tab.active { background: var(--primary); color: white; }
+
+    /* ─── Layout ─── */
+    .app-container { display: flex; flex-direction: column; min-height: 100vh; }
+    .page-content { flex: 1; padding: 20px 24px; }
+    .hidden { display: none !important; }
+
+    /* ─── Cards ─── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    /* ─── Map Explorer ─── */
+    .map-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+      height: calc(100vh - 140px);
+    }
+    .map-column { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+    .map-wrapper {
+      flex: 1;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+      min-height: 400px;
+    }
+    #map { height: 100%; width: 100%; }
+
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      max-height: calc(100vh - 140px);
+    }
+
+    /* ─── Search Box ─── */
+    .map-search-container {
+      position: absolute;
+      top: 10px;
+      left: 50px;
+      z-index: 999;
+      width: 350px;
+    }
+    .map-search-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      background: white;
+      box-shadow: var(--shadow-lg);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .map-search-input:focus { border-color: var(--primary); }
+    .map-search-input::placeholder { color: #94a3b8; }
+
+    .search-results {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-top: 4px;
+      box-shadow: var(--shadow-lg);
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .search-result-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: #f1f5f9; }
+    .search-no-results {
+      padding: 12px 14px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+    .search-error {
+      padding: 12px 14px;
+      color: #dc2626;
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    /* ─── Radius Selector ─── */
+    .radius-selector {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .radius-btn {
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      background: white;
+      font-size: 0.8rem;
+      transition: all 0.15s;
+    }
+    .radius-btn:hover { border-color: var(--primary); }
+    .radius-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* ─── Legend ─── */
+    .legend { display: flex; flex-wrap: wrap; gap: 6px; }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .legend-item:hover { border-color: var(--primary); }
+    .legend-item.disabled { opacity: 0.4; }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* ─── Summary ─── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: #f8fafc;
+      font-size: 0.82rem;
+    }
+    .summary-icon {
+      font-size: 1.1rem;
+      min-width: 22px;
+      text-align: center;
+    }
+    .summary-label { color: var(--text-muted); }
+    .summary-value { font-weight: 600; color: var(--text); }
+    .summary-dist { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* ─── Nearby List ─── */
+    .nearby-list { max-height: 300px; overflow-y: auto; }
+    .nearby-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.85rem;
+    }
+    .nearby-item:last-child { border-bottom: none; }
+    .nearby-cat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .nearby-name { flex: 1; }
+    .nearby-dist { color: var(--text-muted); font-size: 0.8rem; white-space: nowrap; }
+
+    /* ─── Buttons ─── */
+    .btn {
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-sm { padding: 6px 12px; font-size: 0.82rem; }
+    .btn-outline {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ─── Spinner ─── */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-overlay {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 30px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .error-state {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+    }
+    .error-state .error-icon { font-size: 1.5rem; margin-bottom: 8px; }
+    .error-state p { font-size: 0.88rem; }
+
+    /* ─── Prediction Form ─── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-label { font-size: 0.82rem; font-weight: 500; color: var(--text-muted); }
+    .form-input {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus { border-color: var(--primary); }
+    .form-select { composes: form-input; }
+    .prediction-result {
+      background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+    }
+    .prediction-price { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+    .prediction-range { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+    .distance-filled { border-color: #22c55e !important; background: #f0fdf4; }
+
+    /* ─── Listings ─── */
+    .listings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .listing-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .listing-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .listing-title { font-weight: 600; font-size: 1rem; margin-bottom: 4px; }
+    .listing-location { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+    .listing-price { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .listing-details {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── Toast ─── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      background: #1e293b;
+      color: white;
+      font-size: 0.88rem;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    @media (max-width: 768px) {
+      .map-layout { grid-template-columns: 1fr; height: auto; }
+      .map-wrapper { min-height: 350px; }
+      .side-panel { max-height: none; }
+      .map-search-container { width: calc(100% - 100px); }
+      .form-grid { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+    // ─── Constants ────────────────────────────────────────────────────
+    const API_BASE = 'http://localhost:3000/api';
+    const CHENNAI_CENTER = [13.0827, 80.2707];
+    const DEFAULT_ZOOM = 12;
+
+    const CATEGORY_CONFIG = {
+      school:        { icon: '🏫', color: '#f59e0b', label: 'Schools' },
+      college:       { icon: '🎓', color: '#8b5cf6', label: 'Colleges' },
+      hospital:      { icon: '🏥', color: '#ef4444', label: 'Hospitals' },
+      clinic:        { icon: '⚕️', color: '#f87171', label: 'Clinics' },
+      pharmacy:      { icon: '💊', color: '#fb923c', label: 'Pharmacies' },
+      supermarket:   { icon: '🛒', color: '#22c55e', label: 'Supermarkets' },
+      restaurant:    { icon: '🍽️', color: '#ec4899', label: 'Restaurants' },
+      bank:          { icon: '🏦', color: '#3b82f6', label: 'Banks' },
+      atm:           { icon: '💳', color: '#6366f1', label: 'ATMs' },
+      park:          { icon: '🌳', color: '#10b981', label: 'Parks' },
+      bus_stop:      { icon: '🚌', color: '#f97316', label: 'Bus Stops' },
+      metro_station: { icon: '🚇', color: '#0ea5e9', label: 'Metro/Rail' },
+    };
+
+    // ─── API Helpers ──────────────────────────────────────────────────
+    async function searchPlaces(query) {
+      const res = await fetch(`${API_BASE}/places/search?q=${encodeURIComponent(query)}`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Search failed (${res.status})`);
+      }
+      return res.json();
+    }
+
+    async function fetchNearbyPlaces(lat, lng, radius) {
+      const res = await fetch(`${API_BASE}/places/nearby?lat=${lat}&lng=${lng}&radius=${radius}`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Nearby fetch failed (${res.status})`);
+      }
+      return res.json();
+    }
+
+    async function fetchListings() {
+      const res = await fetch(`${API_BASE}/listings`);
+      if (!res.ok) throw new Error('Failed to fetch listings');
+      return res.json();
+    }
+
+    async function predictPrice(data) {
+      const res = await fetch(`${API_BASE}/predict`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('Prediction failed');
+      return res.json();
+    }
+
+    // ─── Debounce Hook ───────────────────────────────────────────────
+    function useDebounce(value, delay) {
+      const [debounced, setDebounced] = useState(value);
+      useEffect(() => {
+        const timer = setTimeout(() => setDebounced(value), delay);
+        return () => clearTimeout(timer);
+      }, [value, delay]);
+      return debounced;
+    }
+
+    // ─── Toast Component ─────────────────────────────────────────────
+    function Toast({ message, onClose }) {
+      useEffect(() => {
+        const t = setTimeout(onClose, 3000);
+        return () => clearTimeout(t);
+      }, [onClose]);
+      return React.createElement('div', { className: 'toast' }, message);
+    }
+
+    // ─── Search Box Component ────────────────────────────────────────
+    function MapSearchBox({ onSelect }) {
+      const [query, setQuery] = useState('');
+      const [results, setResults] = useState([]);
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+      const [showResults, setShowResults] = useState(false);
+      const cacheRef = useRef({});
+
+      const debouncedQuery = useDebounce(query, 600);
+
+      useEffect(() => {
+        if (!debouncedQuery || debouncedQuery.length < 2) {
+          setResults([]);
+          setShowResults(false);
+          return;
+        }
+
+        const key = debouncedQuery.toLowerCase();
+        if (cacheRef.current[key]) {
+          setResults(cacheRef.current[key]);
+          setShowResults(true);
+          return;
+        }
+
+        let cancelled = false;
+        setLoading(true);
+        setError(null);
+
+        searchPlaces(debouncedQuery)
+          .then(data => {
+            if (cancelled) return;
+            cacheRef.current[key] = data;
+            setResults(data);
+            setShowResults(true);
+          })
+          .catch(err => {
+            if (cancelled) return;
+            setError(err.message || 'Search failed');
+            setResults([]);
+            setShowResults(true);
+          })
+          .finally(() => { if (!cancelled) setLoading(false); });
+
+        return () => { cancelled = true; };
+      }, [debouncedQuery]);
+
+      const handleSelect = (result) => {
+        setQuery(result.display_name.split(',')[0]);
+        setShowResults(false);
+        onSelect(result);
+      };
+
+      return React.createElement('div', { className: 'map-search-container' },
+        React.createElement('input', {
+          className: 'map-search-input',
+          placeholder: '🔍 Search places in Chennai...',
+          value: query,
+          onChange: e => setQuery(e.target.value),
+          onFocus: () => results.length > 0 && setShowResults(true),
+          onBlur: () => setTimeout(() => setShowResults(false), 200)
+        }),
+        loading && React.createElement('div', { className: 'search-results' },
+          React.createElement('div', { className: 'search-no-results' },
+            React.createElement('span', { className: 'spinner' }), ' Searching...'
+          )
+        ),
+        showResults && !loading && React.createElement('div', { className: 'search-results' },
+          error
+            ? React.createElement('div', { className: 'search-error' }, '⚠️ ', error)
+            : results.length === 0
+              ? React.createElement('div', { className: 'search-no-results' }, 'No results found')
+              : results.map(r =>
+                  React.createElement('div', {
+                    key: r.place_id,
+                    className: 'search-result-item',
+                    onMouseDown: () => handleSelect(r)
+                  }, r.display_name)
+                )
+        )
+      );
+    }
+
+    // ─── Radius Selector ─────────────────────────────────────────────
+    function RadiusSelector({ radius, onChange }) {
+      const options = [
+        { value: 500, label: '500m' },
+        { value: 1000, label: '1 km' },
+        { value: 2000, label: '2 km' }
+      ];
+      return React.createElement('div', { className: 'radius-selector' },
+        React.createElement('span', null, 'Radius:'),
+        ...options.map(opt =>
+          React.createElement('button', {
+            key: opt.value,
+            className: `radius-btn ${radius === opt.value ? 'active' : ''}`,
+            onClick: () => onChange(opt.value)
+          }, opt.label)
+        )
+      );
+    }
+
+    // ─── Legend / Filter ─────────────────────────────────────────────
+    function CategoryLegend({ enabledCategories, onToggle }) {
+      return React.createElement('div', { className: 'legend' },
+        ...Object.entries(CATEGORY_CONFIG).map(([key, cfg]) =>
+          React.createElement('div', {
+            key,
+            className: `legend-item ${enabledCategories.has(key) ? '' : 'disabled'}`,
+            onClick: () => onToggle(key)
+          },
+            React.createElement('span', { className: 'legend-dot', style: { background: cfg.color } }),
+            React.createElement('span', null, cfg.icon, ' ', cfg.label)
+          )
+        )
+      );
+    }
+
+    // ─── Neighborhood Summary ────────────────────────────────────────
+    function NeighborhoodSummary({ summary, onUseForPrediction }) {
+      if (!summary || Object.keys(summary).length === 0) return null;
+
+      const schoolDist = summary.school?.nearest_km;
+      const metroDist = summary.metro_station?.nearest_km;
+
+      return React.createElement('div', { className: 'card' },
+        React.createElement('div', {
+          style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }
+        },
+          React.createElement('h3', { className: 'card-title', style: { margin: 0 } }, '📊 Neighborhood Summary'),
+          onUseForPrediction && React.createElement('button', {
+            className: 'btn btn-primary btn-sm',
+            onClick: () => onUseForPrediction(schoolDist, metroDist),
+            disabled: !schoolDist && !metroDist,
+            title: 'Fill prediction form with these distances'
+          }, '🎯 Use for Prediction')
+        ),
+        React.createElement('div', { className: 'summary-grid' },
+          ...Object.entries(summary).map(([cat, data]) => {
+            const cfg = CATEGORY_CONFIG[cat] || { icon: '📍', color: '#94a3b8', label: cat };
+            return React.createElement('div', { key: cat, className: 'summary-item' },
+              React.createElement('span', { className: 'summary-icon' }, cfg.icon),
+              React.createElement('div', null,
+                React.createElement('div', { className: 'summary-value' }, data.count, ' ', cfg.label),
+                React.createElement('div', { className: 'summary-dist' },
+                  'Nearest: ', data.nearest_km.toFixed(2), ' km'
+                )
+              )
+            );
+          })
+        ),
+        React.createElement('div', {
+          style: { marginTop: 12, padding: '10px', background: '#f0f9ff', borderRadius: 6, fontSize: '0.82rem' }
+        },
+          schoolDist != null && React.createElement('div', null, '🏫 Nearest school: ', React.createElement('strong', null, schoolDist.toFixed(2), ' km')),
+          metroDist != null && React.createElement('div', null, '🚇 Nearest metro/rail: ', React.createElement('strong', null, metroDist.toFixed(2), ' km')),
+          !schoolDist && !metroDist && React.createElement('div', { style: { color: '#94a3b8' } }, 'No schools or metro stations found in radius')
+        )
+      );
+    }
+
+    // ─── Nearby List ─────────────────────────────────────────────────
+    function NearbyList({ places, enabledCategories }) {
+      if (!places || places.length === 0) return null;
+
+      // Show nearest per category
+      const nearestPerCat = {};
+      for (const p of places) {
+        if (!enabledCategories.has(p.category)) continue;
+        if (!nearestPerCat[p.category]) nearestPerCat[p.category] = p;
+      }
+
+      const items = Object.values(nearestPerCat);
+      if (items.length === 0) {
+        return React.createElement('div', { className: 'card' },
+          React.createElement('h3', { className: 'card-title' }, '📍 Nearest Places'),
+          React.createElement('p', { style: { color: 'var(--text-muted)', fontSize: '0.88rem' } }, 'No places match active filters')
+        );
+      }
+
+      return React.createElement('div', { className: 'card' },
+        React.createElement('h3', { className: 'card-title' }, '📍 Nearest by Category'),
+        React.createElement('div', { className: 'nearby-list' },
+          ...items.map((p, i) => {
+            const cfg = CATEGORY_CONFIG[p.category] || { color: '#94a3b8', icon: '📍' };
+            return React.createElement('div', { key: i, className: 'nearby-item' },
+              React.createElement('span', { className: 'nearby-cat-dot', style: { background: cfg.color } }),
+              React.createElement('span', { className: 'nearby-name' }, cfg.icon, ' ', p.name),
+              React.createElement('span', { className: 'nearby-dist' }, p.distance_km.toFixed(2), ' km')
+            );
+          })
+        )
+      );
+    }
+
+    // ─── Map Explorer Page ───────────────────────────────────────────
+    function MapExplorer({ onUseForPrediction }) {
+      const mapRef = useRef(null);
+      const mapInstanceRef = useRef(null);
+      const tileLayerRef = useRef(null);
+      const markersLayerRef = useRef(null);
+      const circleRef = useRef(null);
+      const searchMarkerRef = useRef(null);
+      const tileErrorCountRef = useRef(0);
+      const fallbackAppliedRef = useRef(false);
+
+      const [selectedLocation, setSelectedLocation] = useState(null);
+      const [radius, setRadius] = useState(1000);
+      const [nearbyData, setNearbyData] = useState(null);
+      const [nearbyLoading, setNearbyLoading] = useState(false);
+      const [nearbyError, setNearbyError] = useState(null);
+      const [enabledCategories, setEnabledCategories] = useState(
+        new Set(Object.keys(CATEGORY_CONFIG))
+      );
+
+      // Initialize Leaflet map
+      useEffect(() => {
+        if (mapInstanceRef.current) return;
+
+        const map = L.map('map').setView(CHENNAI_CENTER, DEFAULT_ZOOM);
+
+        // Primary tile layer: OSM
+        const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19
+        }).addTo(map);
+
+        tileLayerRef.current = tileLayer;
+
+        // Fallback: switch to CARTO tiles on repeated tile errors
+        tileLayer.on('tileerror', () => {
+          tileErrorCountRef.current++;
+          if (tileErrorCountRef.current >= 3 && !fallbackAppliedRef.current) {
+            fallbackAppliedRef.current = true;
+            console.warn('OSM tiles failing, switching to CARTO fallback tiles');
+            map.removeLayer(tileLayer);
+            const cartoLayer = L.tileLayer(
+              'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+              {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+                maxZoom: 19,
+                subdomains: 'abcd'
+              }
+            ).addTo(map);
+            tileLayerRef.current = cartoLayer;
+          }
+        });
+
+        // Markers group
+        markersLayerRef.current = L.layerGroup().addTo(map);
+
+        // Click handler
+        map.on('click', (e) => {
+          const { lat, lng } = e.latlng;
+          setSelectedLocation({ lat, lng, name: `${lat.toFixed(4)}, ${lng.toFixed(4)}` });
+        });
+
+        mapInstanceRef.current = map;
+
+        return () => {
+          map.remove();
+          mapInstanceRef.current = null;
+        };
+      }, []);
+
+      // Handle location selection → draw circle + fetch nearby
+      useEffect(() => {
+        if (!selectedLocation || !mapInstanceRef.current) return;
+
+        const map = mapInstanceRef.current;
+        const { lat, lng } = selectedLocation;
+
+        // Update or create search marker
+        if (searchMarkerRef.current) {
+          searchMarkerRef.current.setLatLng([lat, lng]);
+          searchMarkerRef.current.getPopup()?.setContent(
+            `<strong>${selectedLocation.name || 'Selected Location'}</strong>`
+          );
+          searchMarkerRef.current.openPopup();
+        } else {
+          searchMarkerRef.current = L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup(`<strong>${selectedLocation.name || 'Selected Location'}</strong>`)
+            .openPopup();
+        }
+
+        // Draw radius circle
+        if (circleRef.current) {
+          circleRef.current.setLatLng([lat, lng]);
+          circleRef.current.setRadius(radius);
+        } else {
+          circleRef.current = L.circle([lat, lng], {
+            radius,
+            color: '#2563eb',
+            fillColor: '#2563eb',
+            fillOpacity: 0.08,
+            weight: 2
+          }).addTo(map);
+        }
+
+        // Fetch nearby places
+        setNearbyLoading(true);
+        setNearbyError(null);
+
+        fetchNearbyPlaces(lat, lng, radius)
+          .then(data => {
+            setNearbyData(data);
+          })
+          .catch(err => {
+            setNearbyError(err.message || 'Failed to fetch nearby places');
+            setNearbyData(null);
+          })
+          .finally(() => setNearbyLoading(false));
+      }, [selectedLocation, radius]);
+
+      // Render category markers on map
+      useEffect(() => {
+        if (!markersLayerRef.current || !nearbyData?.places) return;
+
+        markersLayerRef.current.clearLayers();
+
+        for (const place of nearbyData.places) {
+          if (!enabledCategories.has(place.category)) continue;
+          const cfg = CATEGORY_CONFIG[place.category] || { icon: '📍', color: '#94a3b8' };
+
+          const icon = L.divIcon({
+            html: `<div style="
+              font-size: 18px;
+              width: 28px;
+              height: 28px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background: white;
+              border: 2px solid ${cfg.color};
+              border-radius: 50%;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            ">${cfg.icon}</div>`,
+            className: '',
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
+          });
+
+          L.marker([place.lat, place.lng], { icon })
+            .addTo(markersLayerRef.current)
+            .bindPopup(`<strong>${place.name}</strong><br/>${cfg.icon} ${CATEGORY_CONFIG[place.category]?.label || place.category}<br/>📏 ${place.distance_km.toFixed(2)} km away`);
+        }
+      }, [nearbyData, enabledCategories]);
+
+      // Update circle radius when radius changes
+      useEffect(() => {
+        if (circleRef.current) {
+          circleRef.current.setRadius(radius);
+        }
+      }, [radius]);
+
+      // Search result handler
+      const handleSearchSelect = useCallback((result) => {
+        const map = mapInstanceRef.current;
+        if (!map) return;
+
+        map.flyTo([result.lat, result.lng], 15, { duration: 1.5 });
+        setSelectedLocation({
+          lat: result.lat,
+          lng: result.lng,
+          name: result.display_name.split(',')[0]
+        });
+      }, []);
+
+      // Toggle category filter
+      const toggleCategory = useCallback((cat) => {
+        setEnabledCategories(prev => {
+          const next = new Set(prev);
+          if (next.has(cat)) next.delete(cat);
+          else next.add(cat);
+          return next;
+        });
+      }, []);
+
+      return React.createElement('div', { className: 'map-layout' },
+        // Map column
+        React.createElement('div', { className: 'map-column' },
+          React.createElement('div', { className: 'map-wrapper' },
+            React.createElement('div', { id: 'map' }),
+            React.createElement(MapSearchBox, { onSelect: handleSearchSelect })
+          ),
+          React.createElement('div', { className: 'card', style: { flex: 'none' } },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 } },
+              React.createElement(RadiusSelector, { radius, onChange: (r) => {
+                setRadius(r);
+                if (selectedLocation) {
+                  setSelectedLocation({ ...selectedLocation }); // re-trigger fetch
+                }
+              } }),
+            ),
+            React.createElement(CategoryLegend, { enabledCategories, onToggle: toggleCategory })
+          )
+        ),
+        // Side panel
+        React.createElement('div', { className: 'side-panel' },
+          !selectedLocation && React.createElement('div', { className: 'card' },
+            React.createElement('div', { className: 'error-state' },
+              React.createElement('div', { className: 'error-icon' }, '🗺️'),
+              React.createElement('p', null, 'Click on the map or search for a place to explore the neighborhood')
+            )
+          ),
+          nearbyLoading && React.createElement('div', { className: 'card' },
+            React.createElement('div', { className: 'loading-overlay' },
+              React.createElement('span', { className: 'spinner' }),
+              'Finding nearby places...'
+            )
+          ),
+          nearbyError && React.createElement('div', { className: 'card' },
+            React.createElement('div', { className: 'error-state' },
+              React.createElement('div', { className: 'error-icon' }, '⚠️'),
+              React.createElement('p', null, nearbyError),
+              React.createElement('button', {
+                className: 'btn btn-outline btn-sm',
+                style: { marginTop: 8 },
+                onClick: () => setSelectedLocation({ ...selectedLocation })
+              }, 'Retry')
+            )
+          ),
+          !nearbyLoading && !nearbyError && nearbyData && React.createElement(React.Fragment, null,
+            React.createElement(NeighborhoodSummary, {
+              summary: nearbyData.summary,
+              onUseForPrediction
+            }),
+            React.createElement(NearbyList, {
+              places: nearbyData.places,
+              enabledCategories
+            })
+          )
+        )
+      );
+    }
+
+    // ─── Prediction Page ─────────────────────────────────────────────
+    function PredictionPage({ predictionDistances }) {
+      const [form, setForm] = useState({
+        area_sqft: '',
+        bedrooms: '2',
+        bathrooms: '1',
+        property_type: 'Apartment',
+        distance_to_school_km: '',
+        distance_to_metro_km: ''
+      });
+      const [result, setResult] = useState(null);
+      const [loading, setLoading] = useState(false);
+
+      // Fill distances from map
+      useEffect(() => {
+        if (predictionDistances) {
+          setForm(prev => ({
+            ...prev,
+            distance_to_school_km: predictionDistances.school != null
+              ? String(predictionDistances.school.toFixed(2)) : prev.distance_to_school_km,
+            distance_to_metro_km: predictionDistances.metro != null
+              ? String(predictionDistances.metro.toFixed(2)) : prev.distance_to_metro_km
+          }));
+        }
+      }, [predictionDistances]);
+
+      const handleSubmit = async () => {
+        setLoading(true);
+        try {
+          const data = await predictPrice({
+            area_sqft: parseFloat(form.area_sqft) || 1000,
+            bedrooms: parseInt(form.bedrooms) || 2,
+            bathrooms: parseInt(form.bathrooms) || 1,
+            property_type: form.property_type,
+            distance_to_school_km: form.distance_to_school_km ? parseFloat(form.distance_to_school_km) : undefined,
+            distance_to_metro_km: form.distance_to_metro_km ? parseFloat(form.distance_to_metro_km) : undefined
+          });
+          setResult(data);
+        } catch (err) {
+          setResult({ error: err.message });
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const schoolFilled = predictionDistances?.school != null;
+      const metroFilled = predictionDistances?.metro != null;
+
+      return React.createElement('div', { style: { maxWidth: 700, margin: '0 auto' } },
+        React.createElement('div', { className: 'card' },
+          React.createElement('h3', { className: 'card-title' }, '🏠 Property Price Prediction'),
+          React.createElement('div', { className: 'form-grid' },
+            React.createElement('div', { className: 'form-group' },
+              React.createElement('label', { className: 'form-label' }, 'Area (sq ft)'),
+              React.createElement('input', {
+                className: 'form-input', type: 'number', placeholder: '1000',
+                value: form.area_sqft,
+                onChange: e => setForm(f => ({ ...f, area_sqft: e.target.value }))
+              })
+            ),
+            React.createElement('div', { className: 'form-group' },
+              React.createElement('label', { className: 'form-label' }, 'Bedrooms'),
+              React.createElement('select', {
+                className: 'form-input',
+                value: form.bedrooms,
+                onChange: e => setForm(f => ({ ...f, bedrooms: e.target.value }))
+              },
+                ...[1,2,3,4,5].map(n => React.createElement('option', { key: n, value: n }, n, ' BHK'))
+              )
+            ),
+            React.createElement('div', { className: 'form-group' },
+              React.createElement('label', { className: 'form-label' }, 'Bathrooms'),
+              React.createElement('select', {
+                className: 'form-input',
+                value: form.bathrooms,
+                onChange: e => setForm(f => ({ ...f, bathrooms: e.target.value }))
+              },
+                ...[1,2,3,4].map(n => React.createElement('option', { key: n, value: n }, n))
+              )
+            ),
+            React.createElement('div', { className: 'form-group' },
+              React.createElement('label', { className: 'form-label' }, 'Property Type'),
+              React.createElement('select', {
+                className: 'form-input',
+                value: form.property_type,
+                onChange: e => setForm(f => ({ ...f, property_type: e.target.value }))
+              },
+                ...['Apartment', 'Villa', 'Independent House', 'Plot'].map(t =>
+                  React.createElement('option', { key: t, value: t }, t)
+                )
+              )
+            ),
+            React.createElement('div', { className: 'form-group' },
+              React.createElement('label', { className: 'form-label' },
+                '🏫 Distance to School (km)',
+                schoolFilled && ' ✅'
+              ),
+              React.createElement('input', {
+                className: `form-input ${schoolFilled ? 'distance-filled' : ''}`,
+                type: 'number', step: '0.01', placeholder: 'e.g. 0.5',
+                value: form.distance_to_school_km,
+                onChange: e => setForm(f => ({ ...f, distance_to_school_km: e.target.value }))
+              })
+            ),
+            React.createElement('div', { className: 'form-group' },
+              React.createElement('label', { className: 'form-label' },
+                '🚇 Distance to Metro (km)',
+                metroFilled && ' ✅'
+              ),
+              React.createElement('input', {
+                className: `form-input ${metroFilled ? 'distance-filled' : ''}`,
+                type: 'number', step: '0.01', placeholder: 'e.g. 1.2',
+                value: form.distance_to_metro_km,
+                onChange: e => setForm(f => ({ ...f, distance_to_metro_km: e.target.value }))
+              })
+            )
+          ),
+          React.createElement('button', {
+            className: 'btn btn-primary',
+            style: { marginTop: 16, width: '100%' },
+            onClick: handleSubmit,
+            disabled: loading
+          }, loading ? React.createElement(React.Fragment, null,
+            React.createElement('span', { className: 'spinner', style: { marginRight: 8 } }),
+            'Predicting...'
+          ) : '🔮 Predict Price'),
+          result && !result.error && React.createElement('div', {
+            className: 'prediction-result',
+            style: { marginTop: 16 }
+          },
+            React.createElement('div', { className: 'prediction-price' },
+              '₹', (result.predicted_price / 100000).toFixed(1), ' L'
+            ),
+            React.createElement('div', { className: 'prediction-range' },
+              'Range: ₹', (result.price_range.low / 100000).toFixed(1), ' L – ₹',
+              (result.price_range.high / 100000).toFixed(1), ' L'
+            ),
+            React.createElement('div', { className: 'prediction-range' },
+              'Confidence: ', (result.confidence * 100).toFixed(0), '%'
+            )
+          ),
+          result?.error && React.createElement('div', {
+            className: 'error-state',
+            style: { marginTop: 16 }
+          },
+            React.createElement('p', null, '❌ ', result.error)
+          )
+        )
+      );
+    }
+
+    // ─── Listings Page ───────────────────────────────────────────────
+    function ListingsPage({ onViewOnMap }) {
+      const [listings, setListings] = useState([]);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        fetchListings()
+          .then(setListings)
+          .catch(() => setListings([]))
+          .finally(() => setLoading(false));
+      }, []);
+
+      if (loading) return React.createElement('div', { className: 'loading-overlay' },
+        React.createElement('span', { className: 'spinner' }), 'Loading listings...'
+      );
+
+      return React.createElement('div', null,
+        React.createElement('h2', { style: { marginBottom: 16 } }, '🏘️ Chennai Property Listings'),
+        React.createElement('div', { className: 'listings-grid' },
+          ...listings.map(l =>
+            React.createElement('div', {
+              key: l.id, className: 'listing-card',
+              onClick: () => onViewOnMap(l)
+            },
+              React.createElement('div', { className: 'listing-title' }, l.title),
+              React.createElement('div', { className: 'listing-location' }, '📍 ', l.location),
+              React.createElement('div', { className: 'listing-price' }, '₹', (l.price / 100000).toFixed(1), ' L'),
+              React.createElement('div', { className: 'listing-details' },
+                React.createElement('span', null, '🛏️ ', l.bedrooms, ' BHK'),
+                React.createElement('span', null, '🚿 ', l.bathrooms, ' Bath'),
+                React.createElement('span', null, '📐 ', l.area_sqft, ' sqft')
+              ),
+              React.createElement('button', {
+                className: 'btn btn-outline btn-sm',
+                style: { marginTop: 10 }
+              }, '🗺️ View on Map')
+            )
+          )
+        )
+      );
+    }
+
+    // ─── Main App ────────────────────────────────────────────────────
+    function App() {
+      const [activeTab, setActiveTab] = useState('map');
+      const [toast, setToast] = useState(null);
+      const [predictionDistances, setPredictionDistances] = useState(null);
+
+      const showToast = useCallback((msg) => setToast(msg), []);
+
+      const handleUseForPrediction = useCallback((schoolDist, metroDist) => {
+        setPredictionDistances({ school: schoolDist, metro: metroDist });
+        setActiveTab('predict');
+        showToast('✅ Distances filled in prediction form!');
+      }, [showToast]);
+
+      const handleViewListingOnMap = useCallback((listing) => {
+        setActiveTab('map');
+        // Small delay to let map render, then trigger location
+        setTimeout(() => {
+          window.__datazenSetLocation?.({
+            lat: listing.lat,
+            lng: listing.lng,
+            name: listing.title
+          });
+        }, 300);
+      }, []);
+
+      const tabs = [
+        { id: 'map', label: '🗺️ Map Explorer' },
+        { id: 'listings', label: '🏘️ Listings' },
+        { id: 'predict', label: '🔮 Predict' },
+      ];
+
+      return React.createElement('div', { className: 'app-container' },
+        // Navbar
+        React.createElement('nav', { className: 'navbar' },
+          React.createElement('a', { className: 'navbar-brand', href: '#' },
+            'Data', React.createElement('span', null, 'Zen')
+          ),
+          React.createElement('div', { className: 'nav-tabs' },
+            ...tabs.map(tab =>
+              React.createElement('button', {
+                key: tab.id,
+                className: `nav-tab ${activeTab === tab.id ? 'active' : ''}`,
+                onClick: () => setActiveTab(tab.id)
+              }, tab.label)
+            )
+          )
+        ),
+        // Page content
+        React.createElement('div', { className: 'page-content' },
+          React.createElement('div', { className: activeTab === 'map' ? '' : 'hidden' },
+            React.createElement(MapExplorer, { onUseForPrediction: handleUseForPrediction })
+          ),
+          activeTab === 'listings' && React.createElement(ListingsPage, {
+            onViewOnMap: handleViewListingOnMap
+          }),
+          activeTab === 'predict' && React.createElement(PredictionPage, {
+            predictionDistances
+          })
+        ),
+        // Toast
+        toast && React.createElement(Toast, {
+          message: toast,
+          onClose: () => setToast(null)
+        })
+      );
+    }
+
+    // ─── Mount ───────────────────────────────────────────────────────
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>

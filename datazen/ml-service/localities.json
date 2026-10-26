@@ -1,0 +1,152 @@
+{
+  "_comment": "Rates for 'assumed' localities are placeholders, replace with real data.",
+  "chennai_bounds": {
+    "lat_min": 12.7,
+    "lat_max": 13.3,
+    "lng_min": 79.9,
+    "lng_max": 80.4,
+    "description": "Chennai Metropolitan Area Bounding Box"
+  },
+  "localities": [
+    {
+      "name": "Adyar",
+      "aliases": ["Adyar", "Gandhi Nagar", "Kasturba Nagar", "Besant Nagar", "Indira Nagar"],
+      "centroid": { "lat": 13.0067, "lng": 80.2570 },
+      "base_rate_per_sqft": 9500,
+      "status": "trained"
+    },
+    {
+      "name": "T Nagar",
+      "aliases": ["T Nagar", "T. Nagar", "Thyagaraya Nagar", "Pondy Bazaar", "Panagal Park"],
+      "centroid": { "lat": 13.0418, "lng": 80.2341 },
+      "base_rate_per_sqft": 8800,
+      "status": "trained"
+    },
+    {
+      "name": "Anna Nagar",
+      "aliases": ["Anna Nagar", "Anna Nagar East", "Anna Nagar West", "Shenoy Nagar"],
+      "centroid": { "lat": 13.0850, "lng": 80.2101 },
+      "base_rate_per_sqft": 8500,
+      "status": "trained"
+    },
+    {
+      "name": "Velachery",
+      "aliases": ["Velachery", "Velacheri", "Vijaya Nagar", "Baby Nagar"],
+      "centroid": { "lat": 12.9815, "lng": 80.2180 },
+      "base_rate_per_sqft": 7200,
+      "status": "trained"
+    },
+    {
+      "name": "OMR",
+      "aliases": ["OMR", "Old Mahabalipuram Road", "Rajiv Gandhi Salai", "IT Corridor"],
+      "centroid": { "lat": 12.9010, "lng": 80.2279 },
+      "base_rate_per_sqft": 6800,
+      "status": "trained"
+    },
+    {
+      "name": "Porur",
+      "aliases": ["Porur", "Mugalivakkam", "Ramapuram", "Iyyappanthangal"],
+      "centroid": { "lat": 13.0382, "lng": 80.1565 },
+      "base_rate_per_sqft": 6000,
+      "status": "trained"
+    },
+    {
+      "name": "Chrompet",
+      "aliases": ["Chrompet", "Chromepet", "Radha Nagar", "Hasthinapuram"],
+      "centroid": { "lat": 12.9516, "lng": 80.1462 },
+      "base_rate_per_sqft": 5500,
+      "status": "trained"
+    },
+    {
+      "name": "Tambaram",
+      "aliases": ["Tambaram", "Tambaram West", "Tambaram East", "Sanatorium", "Selaiyur"],
+      "centroid": { "lat": 12.9249, "lng": 80.1000 },
+      "base_rate_per_sqft": 5200,
+      "status": "trained"
+    },
+    {
+      "name": "Guindy",
+      "aliases": ["Guindy", "Kathipara", "Ekkattuthangal", "Guindy Industrial Estate"],
+      "centroid": { "lat": 13.0067, "lng": 80.2020 },
+      "base_rate_per_sqft": 8200,
+      "status": "assumed"
+    },
+    {
+      "name": "Perungudi",
+      "aliases": ["Perungudi", "Kandhanchavadi", "Kallukuttai"],
+      "centroid": { "lat": 12.9654, "lng": 80.2461 },
+      "base_rate_per_sqft": 7200,
+      "status": "assumed"
+    },
+    {
+      "name": "Sholinganallur",
+      "aliases": ["Sholinganallur", "Semmancheri", "ELCOT SEZ"],
+      "centroid": { "lat": 12.8980, "lng": 80.2280 },
+      "base_rate_per_sqft": 6500,
+      "status": "assumed"
+    },
+    {
+      "name": "Medavakkam",
+      "aliases": ["Medavakkam", "Santhosapuram", "Vengaivasal"],
+      "centroid": { "lat": 12.9185, "lng": 80.1915 },
+      "base_rate_per_sqft": 5500,
+      "status": "assumed"
+    },
+    {
+      "name": "Pallavaram",
+      "aliases": ["Pallavaram", "Zamin Pallavaram", "Old Pallavaram", "Cantonment"],
+      "centroid": { "lat": 12.9675, "lng": 80.1491 },
+      "base_rate_per_sqft": 5800,
+      "status": "assumed"
+    },
+    {
+      "name": "Mylapore",
+      "aliases": ["Mylapore", "Luz", "Mandaveli", "Santhome", "Alwarpet"],
+      "centroid": { "lat": 13.0368, "lng": 80.2676 },
+      "base_rate_per_sqft": 11000,
+      "status": "assumed"
+    },
+    {
+      "name": "Kilpauk",
+      "aliases": ["Kilpauk", "Kellys", "Chetpet"],
+      "centroid": { "lat": 13.0784, "lng": 80.2412 },
+      "base_rate_per_sqft": 9500,
+      "status": "assumed"
+    },
+    {
+      "name": "Nungambakkam",
+      "aliases": ["Nungambakkam", "College Road", "Sterling Road", "Thousand Lights"],
+      "centroid": { "lat": 13.0569, "lng": 80.2425 },
+      "base_rate_per_sqft": 11500,
+      "status": "assumed"
+    },
+    {
+      "name": "Perambur",
+      "aliases": ["Perambur", "Vyasarpadi", "Sembium"],
+      "centroid": { "lat": 13.1075, "lng": 80.2337 },
+      "base_rate_per_sqft": 6200,
+      "status": "assumed"
+    },
+    {
+      "name": "Ambattur",
+      "aliases": ["Ambattur", "Ambattur OT", "Ambattur Industrial Estate", "Mogappair"],
+      "centroid": { "lat": 13.1143, "lng": 80.1548 },
+      "base_rate_per_sqft": 5000,
+      "status": "assumed"
+    },
+    {
+      "name": "Thoraipakkam",
+      "aliases": ["Thoraipakkam", "Okkiyam Thoraipakkam", "200 Feet Radial Road"],
+      "centroid": { "lat": 12.9382, "lng": 80.2337 },
+      "base_rate_per_sqft": 7000,
+      "status": "assumed"
+    },
+    {
+      "name": "Madipakkam",
+      "aliases": ["Madipakkam", "Koot Road", "Puzhuthivakkam"],
+      "centroid": { "lat": 12.9623, "lng": 80.1986 },
+      "base_rate_per_sqft": 6200,
+      "status": "assumed"
+    }
+  ]
+}
